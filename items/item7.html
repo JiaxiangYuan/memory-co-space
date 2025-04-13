@@ -14,20 +14,27 @@
         }
         .lang-content {
             display: none;
+            position: relative; /* 为按钮定位提供相对容器 */
         }
         .lang-content.active {
             display: block;
         }
         .play-audio-btn {
-            margin-top: 15px;
-            width: 100%;
-            max-width: 200px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 120px; /* 调整按钮宽度 */
+            font-size: 0.9em; /* 稍微缩小字体 */
         }
         .error-message {
             color: red;
             font-size: 0.9em;
             margin-top: 10px;
             display: none;
+        }
+        /* 确保内容区域不会被按钮覆盖 */
+        .content-area {
+            margin-top: 60px; /* 为按钮留出空间 */
         }
     </style>
 </head>
@@ -41,29 +48,33 @@
 
         <!-- 中文内容 -->
         <div id="zh" class="lang-content active">
-            <h1>非遗草编作品</h1>
-            <img src="../images/item7.jpg" class="img-fluid mb-3" alt="非遗草编作品">
-            <h3>展品简介</h3>
-            <p>
-                <strong>尺寸：</strong> 33cm（直径）<br>
-                非遗传承人王荣华老师的棕编作品，以灵动的指尖技艺将千年传统与现代生活巧妙联结。用精致的工艺，将坚韧的叶片化为栩栩如生的花鸟鱼虫，更创新融入龙凤、瑞兽等吉祥意象。其作品既有巴掌大小的蜻蜓、蝴蝶，亦有半米高的孔雀、游龙，辅以红豆点睛、铁丝塑骨，赋予草木以鲜活生命力。
-            </p>
             <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('zh')">播放语音</button>
-            <p class="error-message" id="zh-error"></p>
+            <div class="content-area">
+                <h1>非遗草编作品</h1>
+                <img src="../images/item7.jpg" class="img-fluid mb-3" alt="非遗草编作品">
+                <h3>展品简介</h3>
+                <p>
+                    <strong>尺寸：</strong> 33cm（直径）<br>
+                    非遗传承人王荣华老师的棕编作品，以灵动的指尖技艺将千年传统与现代生活巧妙联结。用精致的工艺，将坚韧的叶片化为栩栩如生的花鸟鱼虫，更创新融入龙凤、瑞兽等吉祥意象。其作品既有巴掌大小的蜻蜓、蝴蝶，亦有半米高的孔雀、游龙，辅以红豆点睛、铁丝塑骨，赋予草木以鲜活生命力。
+                </p>
+                <p class="error-message" id="zh-error"></p>
+            </div>
             <audio id="zh-audio" src="../audios/item7-ch.mp3"></audio>
         </div>
 
         <!-- 英文内容 -->
         <div id="en" class="lang-content">
-            <h1>Intangible Cultural Heritage Straw Weaving Art</h1>
-            <img src="../images/item7.jpg" class="img-fluid mb-3" alt="Intangible Cultural Heritage Straw Weaving Art">
-            <h3>Exhibit Overview</h3>
-            <p>
-                <strong>Dimensions:</strong> 33cm (diameter)<br>
-                The straw weaving artworks by intangible cultural heritage inheritor Teacher Wang Ronghua skillfully blend millennia-old traditions with modern life through dexterous craftsmanship. With exquisite techniques, tough leaves are transformed into lifelike flowers, birds, fish, and insects, while innovative designs incorporate auspicious symbols like dragons, phoenixes, and mythical beasts. The works range from palm-sized dragonflies and butterflies to half-meter-tall peacocks and roaming dragons, adorned with red beans for eyes and wire for structure, breathing vibrant life into plant materials.
-            </p>
             <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('en')">Play Audio</button>
-            <p class="error-message" id="en-error"></p>
+            <div class="content-area">
+                <h1>Intangible Cultural Heritage Straw Weaving Art</h1>
+                <img src="../images/item7.jpg" class="img-fluid mb-3" alt="Intangible Cultural Heritage Straw Weaving Art">
+                <h3>Exhibit Overview</h3>
+                <p>
+                    <strong>Dimensions:</strong> 33cm (diameter)<br>
+                    The straw weaving artworks by intangible cultural heritage inheritor Teacher Wang Ronghua skillfully blend millennia-old traditions with modern life through dexterous craftsmanship. With exquisite techniques, tough leaves are transformed into lifelike flowers, birds, fish, and insects, while innovative designs incorporate auspicious symbols like dragons, phoenixes, and mythical beasts. The works range from palm-sized dragonflies and butterflies to half-meter-tall peacocks and roaming dragons, adorned with red beans for eyes and wire for structure, breathing vibrant life into plant materials.
+                </p>
+                <p class="error-message" id="en-error"></p>
+            </div>
             <audio id="en-audio" src="../audios/item7-en.mp3"></audio>
         </div>
     </div>

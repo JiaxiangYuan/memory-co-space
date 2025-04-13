@@ -18,7 +18,7 @@
         .lang-content.active {
             display: block;
         }
-        .read-aloud-btn {
+        .play-audio-btn {
             margin-top: 15px;
             width: 100%;
             max-width: 200px;
@@ -52,8 +52,9 @@
             <p>
                 上世纪五十年代，这里还是农村地区，随着浦东新区的建设和发展，东明路街道开始逐渐发展壮大。如今的东明是一个充满活力和创新的地区，拥有众多企业、学校、医院等机构。在保持传统文化的基础上，东明路街道不断推进改革开放和现代化建设，成为了一个充满活力和机遇的地区。
             </p>
-            <button class="btn btn-primary read-aloud-btn" onclick="readAloud('zh')">语音阅读</button>
+            <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('zh')">播放语音</button>
             <p class="error-message" id="zh-error"></p>
+            <audio id="zh-audio" src="../audios/item1-ch.mp3"></audio>
         </div>
 
         <!-- 英文内容 -->
@@ -69,38 +70,40 @@
             <p>
                 In the 1950s, this area was still rural. With the construction and development of Pudong New Area, Dongming Road Subdistrict gradually grew and thrived. Today, Dongming is a vibrant and innovative region, home to numerous businesses, schools, hospitals, and other institutions. While preserving traditional culture, Dongming Road Subdistrict continues to advance reform, opening-up, and modernization, becoming a dynamic and opportunity-filled area.
             </p>
-            <button class="btn btn-primary read-aloud-btn" onclick="readAloud('en')">Read Aloud</button>
+            <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('en')">Play Audio</button>
             <p class="error-message" id="en-error"></p>
+            <audio id="en-audio" src="../audios/item1-en.mp3"></audio>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let isReading = false;
-        let utterance = null;
+        let currentAudio = null;
 
         function toggleLanguage(lang) {
-            if (isReading) {
-                window.speechSynthesis.cancel();
-                isReading = false;
-                updateButtonText('zh', false);
-                updateButtonText('en', false);
+            // 停止当前播放的音频
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                updateButtonText(currentAudio.id.replace('-audio', ''), false);
             }
+            // 切换语言内容
             document.querySelectorAll('.lang-content').forEach(el => {
                 el.classList.remove('active');
             });
             document.getElementById(lang).classList.add('active');
+            // 清除错误提示
             document.querySelectorAll('.error-message').forEach(el => {
                 el.style.display = 'none';
             });
         }
 
-        function updateButtonText(lang, reading) {
-            const btn = document.querySelector(`#${lang} .read-aloud-btn`);
+        function updateButtonText(lang, playing) {
+            const btn = document.querySelector(`#${lang} .play-audio-btn`);
             if (lang === 'zh') {
-                btn.textContent = reading ? '停止阅读' : '语音阅读';
+                btn.textContent = playing ? '暂停语音' : '播放语音';
             } else {
-                btn.textContent = reading ? 'Stop Reading' : 'Read Aloud';
+                btn.textContent = playing ? 'Pause Audio' : 'Play Audio';
             }
         }
 
@@ -116,77 +119,37 @@
             errorEl.style.display = 'none';
         }
 
-        function readAloud(lang) {
-            // Check if SpeechSynthesis is supported
-            if (!('speechSynthesis' in window)) {
-                showError(lang, lang === 'zh' ? '您的设备不支持语音阅读功能。' : 'Your device does not support text-to-speech.');
-                return;
+        function toggleAudio(lang) {
+            const audio = document.getElementById(`${lang}-audio`);
+            const isPlaying = !audio.paused && !audio.ended;
+
+            // 如果有其他音频在播放，先停止
+            if (currentAudio && currentAudio !== audio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                updateButtonText(currentAudio.id.replace('-audio', ''), false);
             }
 
-            const contentDiv = document.getElementById(lang);
-            const textElements = contentDiv.querySelectorAll('h1, h3, p');
-            let textToRead = '';
-            textElements.forEach(el => {
-                textToRead += el.textContent + ' ';
-            });
-
-            if (!textToRead.trim()) {
-                showError(lang, lang === 'zh' ? '没有可阅读的文本。' : 'No text available to read.');
-                return;
-            }
-
-            if (isReading) {
-                window.speechSynthesis.cancel();
-                isReading = false;
+            // 切换播放/暂停
+            if (isPlaying) {
+                audio.pause();
                 updateButtonText(lang, false);
-                clearError(lang);
-                return;
-            }
-
-            clearError(lang);
-            utterance = new SpeechSynthesisUtterance(textToRead);
-            utterance.lang = lang === 'zh' ? 'zh-CN' : 'en-US';
-            utterance.rate = 1;
-            utterance.volume = 1;
-
-            // Attempt to select a suitable voice
-            const voices = window.speechSynthesis.getVoices();
-            const voice = voices.find(v => v.lang === utterance.lang) || voices[0];
-            if (voice) {
-                utterance.voice = voice;
             } else {
-                showError(lang, lang === 'zh' ? '未找到合适的语音包，请检查设备语言设置。' : 'No suitable voice found. Please check your device’s language settings.');
-                return;
-            }
-
-            utterance.onend = () => {
-                isReading = false;
-                updateButtonText(lang, false);
                 clearError(lang);
-            };
-
-            utterance.onerror = (event) => {
-                isReading = false;
-                updateButtonText(lang, false);
-                showError(lang, lang === 'zh' ? '语音阅读出错，请稍后重试。' : 'An error occurred during reading. Please try again.');
-                console.error('Speech error:', event);
-            };
-
-            // For mobile: ensure speech starts after user interaction
-            try {
-                window.speechSynthesis.speak(utterance);
-                isReading = true;
-                updateButtonText(lang, true);
-            } catch (e) {
-                showError(lang, lang === 'zh' ? '无法启动语音阅读，请检查设置。' : 'Unable to start reading. Please check settings.');
-                console.error('Speech start error:', e);
+                audio.play().then(() => {
+                    currentAudio = audio;
+                    updateButtonText(lang, true);
+                    // 音频结束时重置
+                    audio.onended = () => {
+                        updateButtonText(lang, false);
+                        currentAudio = null;
+                    };
+                }).catch(err => {
+                    showError(lang, lang === 'zh' ? '无法播放音频，请检查文件或网络。' : 'Unable to play audio. Please check the file or network.');
+                    console.error('音频播放错误:', err);
+                });
             }
         }
-
-        // Load voices asynchronously (for mobile browsers)
-        window.speechSynthesis.onvoiceschanged = () => {
-            // Voices are now available
-        };
     </script>
 </body>
 </html>

@@ -7,21 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
     <style>
-        .lang-toggle {
+        .header-controls {
             position: absolute;
             top: 20px;
-            right: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .play-audio-btn {
+            width: 120px;
+            font-size: 0.9em;
+        }
+        .lang-toggle {
+            display: flex;
+            gap: 5px;
         }
         .lang-content {
             display: none;
+            margin-top: 60px;
         }
         .lang-content.active {
             display: block;
-        }
-        .play-audio-btn {
-            margin-top: 15px;
-            width: 100%;
-            max-width: 200px;
         }
         .error-message {
             color: red;
@@ -33,10 +40,13 @@
 </head>
 <body>
     <div class="container my-5">
-        <!-- 语言切换按钮 -->
-        <div class="lang-toggle">
-            <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('zh')">中文</button>
-            <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('en')">English</button>
+        <!-- 头部控件 -->
+        <div class="header-controls">
+            <button id="play-audio-btn" class="btn btn-primary play-audio-btn" onclick="toggleAudio(currentLang)">播放语音</button>
+            <div class="lang-toggle">
+                <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('zh')">中文</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('en')">English</button>
+            </div>
         </div>
 
         <!-- 中文内容 -->
@@ -48,7 +58,6 @@
                 <strong>尺寸：</strong> 24cm × 18cm × 3cm<br>
                 这组由严景纳老师珍藏的粮票，以25克、50克、100克、250克及五市斤等精细面值，串联起计划经济时代的民生图景。小至25克的“微型票证”，曾是物资匮乏时期精打细算的缩影，薄纸上的刻度承载着家庭餐桌的生存智慧；五市斤粮票则常用于节庆或特殊补助。
             </p>
-            <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('zh')">播放语音</button>
             <p class="error-message" id="zh-error"></p>
             <audio id="zh-audio" src="../audios/item4-ch.mp3"></audio>
         </div>
@@ -62,7 +71,6 @@
                 <strong>Dimensions:</strong> 24cm × 18cm × 3cm<br>
                 This collection of grain coupons, cherished by Teacher Yan Jingna, features denominations of 25 grams, 50 grams, 100 grams, 250 grams, and five city pounds, weaving together a vivid picture of daily life during the planned economy era. The tiny 25-gram "mini-tickets" reflect the meticulous budgeting of a time marked by scarcity, with the scales on these thin papers carrying the wisdom of survival at the family table. The five-pound coupons were often used for festivals or special subsidies.
             </p>
-            <button class="btn btn-primary play-audio-btn" onclick="toggleAudio('en')">Play Audio</button>
             <p class="error-message" id="en-error"></p>
             <audio id="en-audio" src="../audios/item4-en.mp3"></audio>
         </div>
@@ -71,27 +79,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentAudio = null;
+        let currentLang = 'zh';
 
         function toggleLanguage(lang) {
-            // 停止当前播放的音频
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
-                updateButtonText(currentAudio.id.replace('-audio', ''), false);
+                updateButtonText(lang, false);
             }
-            // 切换语言内容
             document.querySelectorAll('.lang-content').forEach(el => {
                 el.classList.remove('active');
             });
             document.getElementById(lang).classList.add('active');
-            // 清除错误提示
+            currentLang = lang;
+            updateButtonText(lang, false);
             document.querySelectorAll('.error-message').forEach(el => {
                 el.style.display = 'none';
             });
         }
 
         function updateButtonText(lang, playing) {
-            const btn = document.querySelector(`#${lang} .play-audio-btn`);
+            const btn = document.getElementById('play-audio-btn');
             if (lang === 'zh') {
                 btn.textContent = playing ? '暂停语音' : '播放语音';
             } else {
@@ -115,14 +123,12 @@
             const audio = document.getElementById(`${lang}-audio`);
             const isPlaying = !audio.paused && !audio.ended;
 
-            // 如果有其他音频在播放，先停止
             if (currentAudio && currentAudio !== audio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
-                updateButtonText(currentAudio.id.replace('-audio', ''), false);
+                updateButtonText(currentLang, false);
             }
 
-            // 切换播放/暂停
             if (isPlaying) {
                 audio.pause();
                 updateButtonText(lang, false);
@@ -131,7 +137,6 @@
                 audio.play().then(() => {
                     currentAudio = audio;
                     updateButtonText(lang, true);
-                    // 音频结束时重置
                     audio.onended = () => {
                         updateButtonText(lang, false);
                         currentAudio = null;

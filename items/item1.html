@@ -3,25 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>东明徽章与东明牌电珠 - Memory Co-Space</title>
+    <title>东明徽章与东明牌电珠 / Dongming Badge and Dongming Light Bulb - Memory Co-Space</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .lang-content {
+            display: none;
+        }
+        .lang-content.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <div class="container my-5">
-        <h1>东明徽章与东明牌电珠</h1>
-        <img src="../images/item1.jpg" class="img-fluid mb-3" alt="东明徽章与东明牌电珠">
-        <h3>展品简介</h3>
-        <p>
-            <strong>尺寸：</strong> 42cm × 42cm × 7cm<br>
-            <strong>收藏者：</strong> 东明路街道凌五居民 姚远
-        </p>
-        <h3>背景信息</h3>
-        <p>
-            上世纪五十年代，这里还是农村地区，随着浦东新区的建设和发展，东明路街道开始逐渐发展壮大。如今的东明是一个充满活力和创新的地区，拥有众多企业、学校、医院等机构。在保持传统文化的基础上，东明路街道不断推进改革开放和现代化建设，成为了一个充满活力和机遇的地区。
-        </p>
-        <a href="../index.html" class="btn btn-secondary mt-3">返回主页</a>
+        <!-- 语言切换按钮 -->
+        <div class="lang-toggle">
+            <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('zh')">中文</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="toggleLanguage('en')">English</button>
+        </div>
+
+        <!-- 中文内容 -->
+        <div id="zh" class="lang-content active">
+            <h1>东明徽章与东明牌电珠</h1>
+            <img src="../images/item1.jpg" class="img-fluid mb-3" alt="东明徽章与东明牌电珠">
+            <h3>展品简介</h3>
+            <p>
+                <strong>尺寸：</strong> 42cm × 42cm × 7cm<br>
+                <strong>收藏者：</strong> 东明路街道凌五居民 姚远
+            </p>
+            <h3>背景信息</h3>
+            <p>
+                上世纪五十年代，这里还是农村地区，随着浦东新区的建设和发展，东明路街道开始逐渐发展壮大。如今的东明是一个充满活力和创新的地区，拥有众多企业、学校、医院等机构。在保持传统文化的基础上，东明路街道不断推进改革开放和现代化建设，成为了一个充满活力和机遇的地区。
+            </p>
+            <a href="../index.html" class="btn btn-secondary mt-3">返回主页</a>
+        </div>
+
+        <!-- 英文内容 -->
+        <div id="en" class="lang-content">
+            <h1>Dongming Badge and Dongming Light Bulb</h1>
+            <img src="../images/item1.jpg" class="img-fluid mb-3" alt="Dongming Badge and Light Bulb">
+            <h3>Exhibit Overview</h3>
+            <p>
+                <strong>Dimensions:</strong> 42cm × 42cm × 7cm<br>
+                <strong>Collector:</strong> Yao Yuan, resident of Lingwu, Dongming Road Subdistrict
+            </p>
+            <h3>Background Information</h3>
+            <p>
+                In the 1950s, this area was still rural. With the construction and development of Pudong New Area, Dongming Road Subdistrict gradually grew and thrived. Today, Dongming is a vibrant and innovative region, home to numerous businesses, schools, hospitals, and other institutions. While preserving traditional culture, Dongming Road Subdistrict continues to advance reform, opening-up, and modernization, becoming a dynamic and opportunity-filled area.
+            </p>
+            <a href="../index.html" class="btn btn-secondary mt-3">Back to Home</a>
+        </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleLanguage(lang) {
+            document.querySelectorAll('.lang-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(lang).classList.add('active');
+        }
+    </script>
 </body>
 </html>

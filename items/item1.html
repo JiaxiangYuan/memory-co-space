@@ -18,6 +18,9 @@
         .lang-content.active {
             display: block;
         }
+        .read-aloud-btn {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +44,7 @@
             <p>
                 上世纪五十年代，这里还是农村地区，随着浦东新区的建设和发展，东明路街道开始逐渐发展壮大。如今的东明是一个充满活力和创新的地区，拥有众多企业、学校、医院等机构。在保持传统文化的基础上，东明路街道不断推进改革开放和现代化建设，成为了一个充满活力和机遇的地区。
             </p>
-            <a href="../index.html" class="btn btn-secondary mt-3">返回主页</a>
+            <button class="btn btn-primary read-aloud-btn" onclick="readAloud('zh')">语音阅读</button>
         </div>
 
         <!-- 英文内容 -->
@@ -57,17 +60,52 @@
             <p>
                 In the 1950s, this area was still rural. With the construction and development of Pudong New Area, Dongming Road Subdistrict gradually grew and thrived. Today, Dongming is a vibrant and innovative region, home to numerous businesses, schools, hospitals, and other institutions. While preserving traditional culture, Dongming Road Subdistrict continues to advance reform, opening-up, and modernization, becoming a dynamic and opportunity-filled area.
             </p>
-            <a href="../index.html" class="btn btn-secondary mt-3">Back to Home</a>
+            <button class="btn btn-primary read-aloud-btn" onclick="readAloud('en')">Read Aloud</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        let isReading = false;
+        let utterance = null;
+
         function toggleLanguage(lang) {
+            if (isReading) {
+                window.speechSynthesis.cancel();
+                isReading = false;
+            }
             document.querySelectorAll('.lang-content').forEach(el => {
                 el.classList.remove('active');
             });
             document.getElementById(lang).classList.add('active');
+        }
+
+        function readAloud(lang) {
+            const contentDiv = document.getElementById(lang);
+            const textElements = contentDiv.querySelectorAll('h1, h3, p');
+            let textToRead = '';
+            textElements.forEach(el => {
+                textToRead += el.textContent + ' ';
+            });
+
+            if (isReading) {
+                window.speechSynthesis.cancel();
+                isReading = false;
+                document.querySelector(`#${lang} .read-aloud-btn`).textContent = lang === 'zh' ? '语音阅读' : 'Read Aloud';
+                return;
+            }
+
+            utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = lang === 'zh' ? 'zh-CN' : 'en-US';
+            utterance.rate = 1;
+            utterance.onend = () => {
+                isReading = false;
+                document.querySelector(`#${lang} .read-aloud-btn`).textContent = lang === 'zh' ? '语音阅读' : 'Read Aloud';
+            };
+
+            window.speechSynthesis.speak(utterance);
+            isReading = true;
+            document.querySelector(`#${lang} .read-aloud-btn`).textContent = lang === 'zh' ? '停止阅读' : 'Stop Reading';
         }
     </script>
 </body>
